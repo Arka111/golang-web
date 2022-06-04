@@ -1,0 +1,39 @@
+name: CONFIGURE_EKS_CLUSTER
+
+on:
+  workflow_run:
+    workflows: ["CREATE_INFRA"]
+    types:
+      - completed
+
+jobs:
+  CONFIGURE_CLUSTER:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:  eu-west-1
+
+      - name: Variables Generator
+        run: |
+          echo 'EKS_CLUSTER=eks-cluster-golang-web-task' >> $GITHUB_ENV
+          echo 'REGION=eu-west-1' >> $GITHUB_ENV
+
+      - name: Check Binaries
+        run: ./helpers/check-bin.sh
+
+      - name: Connect to EKS Cluster
+        run: ./helpers/connect-eks.sh
+
+      - name: Helm Configuration
+        run: ./helpers/pre-install.sh
+      
+      - name: Install Cluster add-ons
+        run: ./helpers/install.sh

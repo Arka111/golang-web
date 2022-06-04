@@ -1,0 +1,34 @@
+name: BUILD_AND_PUSH
+
+on:
+  workflow_run:
+    workflows: ["CONFIGURE_EKS_CLUSTER"]
+    types:
+      - completed
+  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17' # The Go version to download (if necessary) and use
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: ./golang-app
+          file: ./golang-app/Dockerfile
+          push: true
+          tags: |
+            arka111/web:latest
+            arka111/web:${{ github.sha }}
+
