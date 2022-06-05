@@ -31,17 +31,21 @@ pipeline responsible for deploying the Helm chart, in case it is needed to chang
    
 ## GitHub Actions Workflows
 
+1. [terraform.yaml] (.github/workflows/terraform.yaml) Provision the infra on AWS (VPC, EKS-Master and EKS-Nodes)
+2. [configure_eks.yaml] (.github/workflows/configure_eks.yaml) Install EKS Add-ons
 1. [golang-build-push.yaml](.github/workflows/golang-build-push.yaml) Workflow responsible for building the container and pushing it to DockerHub.
 2. [deploy-golang-chart.yaml](.github/workflows/configure-eks.yaml) Workflow responsible for deploying the Helm chart into the EKS cluster.
 
 ## Configuring GitHub Actions Workflows
 
-The workflow needs three secrets in order to work:
+The workflow needs below secrets in order to work:
 
 - AWS_ACCESS_KEY_ID: Access key used by AWS CLI
 - AWS_SECRET_ACCESS_KEY: Secret key used by AWS CLI
 - DOCKER_HUB_USERNAME: DockerHub username
 - DOCKER_HUB_ACCESS_TOKEN: DockerHub Access Token
+- TF_API_TOKEN: Token used to connect to Terraform Cloud
+
 
 ## Considerations
 
@@ -49,6 +53,6 @@ The workflow needs three secrets in order to work:
 
 2. The pipeline/deployment strategy is not optimal for a production environment.
    
-3. To keep things simple, I did not configured "advanced" stuff such as Affinity and anti-affinity to improve pod scalability/resilience.
+3. To keep things simple, I did not configure "advanced" stuff such as Affinity and anti-affinity to improve pod scalability/resilience.
 
-4. The Dockerfile was created to be as simples as possible.
+4. The Dockerfile was created to be as simple as possible.
