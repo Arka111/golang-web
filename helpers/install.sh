@@ -19,5 +19,4 @@ helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manag
 
 # Install Cert-manager cluster-issuer prod and staging 
 
-kubectl apply -f ./cm-issuers/prod_issuer.yaml 
-kubectl apply -f ./cm-issuers/staging_issuer.yaml 
+kubectl apply -f ./cm-issuers/prod_issuer.yaml
