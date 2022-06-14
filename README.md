@@ -1,6 +1,6 @@
 # Golang - Docker - Helm - Terraform
 
-This repo contains the end-toend pipeline. It is composed of the golang web application and the Helm chart to deploy the container, and the infra required to be created for this set-up with the use of Terraform.
+This repo contains the end-to-end pipeline. It is composed of the golang web application and the Helm chart to deploy the container, and the infra required to be created for this set-up with the use of Terraform.
 
 ## Project Objectives
 
@@ -18,14 +18,14 @@ HTTP/HTTPS load balancers are on L7, therefore they are application aware.
 
 So, basically it is not possible to get  a HTTPS load balancer from a LoadBalancer type service. The achieve it, a Ingress controller is needed.
 
-Nginx was the choice for this project. Since it is one of the most used by the community, and has a great support.
+Nginx was the choice for this project. Since it is one of the most used by the community, and has a great support. It also serves as a reverse proxy.
 
-To manage certificates, Cert-Manager was the choice for this project. It is the most popular solution used in Kubernetes and has a great support from the community.
+To manage certificates, Cert-Manager was the choice for this project. It is the most popular solution used in Kubernetes and has a great support from the community. For certificates, Let's Encrypt is used. 
 
 3. Automation
 
 The whole process is fully automated. There are four pipelines. 
-One is responsible for creating the whole infra on AWS, after this pipeline finishes it is gonna trigger a second pipeline which is responsible for configuring the following add-ons:
+The first one is responsible for creating the whole infra on AWS (EKS Cluster, EKS nodes, EKS networking, etc.), after this pipeline finishes it is gonna trigger a second pipeline which is responsible for configuring the EKS cluster with following add-ons:
 
 - Metrics Server
 - Nginx Ingress Controller
@@ -36,7 +36,7 @@ Next ones are responsible for creating the container and pushing it to DockerHub
 
 ## Solution Explanation
 
-Cert-manager is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self signed.
+Cert-manager is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self signed. We use Let's Encrypt as it's free.
 
 It will ensure certificates are valid and up to date, and attempt to renew certificates at a configured time before expiry.
 
@@ -69,13 +69,11 @@ spec:
     secretName: myingress-cert # < cert-manager will store the created certificate in this secret.
 ```
 
-Every time a change is made into any file inside the golang-app, the pipeline is gonna trigger, create the infra on AWS, and then the next pipeline will trigger to create the Add-ons. The 3rd pipeline build a container, tag it, and push it to DockerHub.
+Every time a change is made into any file inside the golang-app, the pipeline is gonna trigger the pipeline, create/update the infra on AWS, and then the next pipeline will trigger to create the Add-ons. The 3rd pipeline build a container, tag it, and push it to DockerHub.
 
 Once this pipeline finishes the next pipeline is gonna be trigged and it is gonna deploy the install/upgrade the Helm chart into the EKS cluster.
 
-The Helm chart is gonna deploy the application, including the ingress resource with TLS support, and HPA. Also, every change made into the values.yaml file is gonna the
-pipeline responsible for deploying the Helm chart, in case it is needed to change only configuration regarding the chart and not update the container image.
-
+The Helm chart is gonna deploy the application, including the ingress resource with TLS support, and HPA. Also, every change made into the values.yaml file is gonna trigger the pipeline responsible for deploying the Helm chart, in case it is needed to change only configuration regarding the chart and not update the container image.
 
 
 ## List of folders/files and their descriptions
