@@ -80,9 +80,11 @@ pipeline responsible for deploying the Helm chart, in case it is needed to chang
 
 ## List of folders/files and their descriptions
 
-1. [golang-app](golang-app) Contains the application code and the Dockerfile.
-2. [golang-web-chart](golang-web-chart) Contains the Helm chart responsible for deploying the Golang application.
-3. [helpers](helpers) Contains scripts used by GitHub Actions.
+1. [main.tf](main.tf) File responsible for the modules composition. It is responsible for "calling" external Terraform modules to create VPC, EKS-MASTER and EKS-NODES
+2. [backend.tf](variables.tf) File responsible for the backend configuration to connect to terraform cloud, where the state file is being kept.
+3. [golang-app](golang-app) Contains the application code and the Dockerfile.
+4. [golang-web-chart](golang-web-chart) Contains the Helm chart responsible for deploying the Golang application.
+5. [helpers](helpers) Contains scripts used by GitHub Actions.
    
 ## GitHub Actions Workflows
 
