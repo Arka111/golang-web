@@ -1,6 +1,6 @@
-# Golang - Docker - Helm 
+# Golang - Docker - Helm - Terraform
 
-This repo contains the application part. It is composed of the golang web application and the Helm chart to deploy the container.
+This repo contains the end-toend pipeline. It is composed of the golang web application and the Helm chart to deploy the container, and the infra required to be created for this set-up with the use of Terraform.
 
 ## Project Objectives
 
@@ -13,15 +13,59 @@ Automate the build and upload of the container.
 
 2. Automation
 
-The whole process is fully automated. There are two pipelines. One is responsible for creating the container and pushing it to DockerHub, after this pipeline finishes it is gonna trigger a second pipeline which is responsible for deploying the Helm chart into the EKS cluster.
+The whole process is fully automated. There are four pipelines. 
+One is responsible for creating the whole infra on AWS, after this pipeline finishes it is gonna trigger a second pipeline which is responsible for configuring the following add-ons:
+
+Metrics Server
+Nginx Ingress Controller
+Cert-Manager
+Cert-Manager Issuers(Prod only)
+
+Next ones are responsible for creating the container and pushing it to DockerHub, after this pipeline finishes it is gonna trigger another pipeline which is responsible for deploying the Helm chart into the EKS cluster.
+
 ## Solution Explanation
 
-Every time a change is made into any file inside the golang-app, the first pipeline is gonna trigger, build a container, tag it, and push it to DockerHub.
+Cert-manager is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self signed.
 
-Once this pipeline finishes a second pipeline is gonna be trigged and it is gonna deploy the install/upgrade the Helm chart into the EKS cluster.
+It will ensure certificates are valid and up to date, and attempt to renew certificates at a configured time before expiry.
+
+The sub-component ingress-shim watches Ingress resources across the cluster. If it observes an Ingress with a supported annotation, it will ensure a Certificate resource with the name provided in the tls.secretName field and configured as described on the Ingress exists.
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    # add an annotation indicating the issuer to use.
+    cert-manager.io/cluster-issuer: nameOfClusterIssuer
+  name: myIngress
+  namespace: myIngress
+spec:
+  rules:
+  - host: example.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: myservice
+            port:
+              number: 80
+  tls: # < placing a host in the TLS config will determine what ends up in the cert's subjectAltNames
+  - hosts:
+    - example.com
+    secretName: myingress-cert # < cert-manager will store the created certificate in this secret.
+```
+
+Every time a change is made into any file inside the golang-app, the pipeline is gonna trigger, create the infra on AWS, and then the next pipeline will trigger to create the Add-ons. The 3rd pipeline build a container, tag it, and push it to DockerHub.
+
+Once this pipeline finishes the next pipeline is gonna be trigged and it is gonna deploy the install/upgrade the Helm chart into the EKS cluster.
 
 The Helm chart is gonna deploy the application, including the ingress resource with TLS support, and HPA. Also, every change made into the values.yaml file is gonna the
 pipeline responsible for deploying the Helm chart, in case it is needed to change only configuration regarding the chart and not update the container image.
+
+
 
 ## List of folders/files and their descriptions
 
@@ -31,8 +75,8 @@ pipeline responsible for deploying the Helm chart, in case it is needed to chang
    
 ## GitHub Actions Workflows
 
-1. [terraform.yaml] (.github/workflows/terraform.yaml) Provision the infra on AWS (VPC, EKS-Master and EKS-Nodes)
-2. [configure_eks.yaml] (.github/workflows/configure_eks.yaml) Install EKS Add-ons
+1. [terraform.yaml](.github/workflows/terraform.yaml) Provision the infra on AWS (VPC, EKS-Master and EKS-Nodes)
+2. [configure_eks.yaml](.github/workflows/configure_eks.yaml) Install EKS Add-ons
 1. [golang-build-push.yaml](.github/workflows/golang-build-push.yaml) Workflow responsible for building the container and pushing it to DockerHub.
 2. [deploy-golang-chart.yaml](.github/workflows/configure-eks.yaml) Workflow responsible for deploying the Helm chart into the EKS cluster.
 
