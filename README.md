@@ -88,10 +88,10 @@ pipeline responsible for deploying the Helm chart, in case it is needed to chang
    
 ## Helpers
 
-1. check-bin.sh: script that check if the binaries needed.
-2. connect-eks.sh: script used to connect to EKS cluster API.
-3. pre-install.sh: script used to add Helm repositories.
-4. install.sh: script used to install EKS add-ons.
+1. [check-bin.sh](helpers/check-bin.sh): script that check if the binaries needed.
+2. [connect-eks.sh](helpers/connect-eks.sh): script used to connect to EKS cluster API.
+3. [pre-install.sh](helpers/pre-install.sh): script used to add Helm repositories.
+4. [install.sh](helpers/install.sh): script used to install EKS add-ons.
 
 ## GitHub Actions Workflows
 
