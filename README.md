@@ -86,6 +86,13 @@ pipeline responsible for deploying the Helm chart, in case it is needed to chang
 4. [golang-web-chart](golang-web-chart) Contains the Helm chart responsible for deploying the Golang application.
 5. [helpers](helpers) Contains scripts used by GitHub Actions.
    
+## Helpers
+
+1. check-bin.sh: script that check if the binaries needed.
+2. connect-eks.sh: script used to connect to EKS cluster API.
+3. pre-install.sh: script used to add Helm repositories.
+4. install.sh: script used to install EKS add-ons.
+
 ## GitHub Actions Workflows
 
 1. [terraform.yaml](.github/workflows/terraform.yaml) Provision the infra on AWS (VPC, EKS-Master and EKS-Nodes)
