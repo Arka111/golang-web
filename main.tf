@@ -57,7 +57,7 @@ module "eks_nodes_data" {
   scaling_config = [{
     desired_size = 3
     max_size     = 6
-    min_size     = 4
+    min_size     = 3
   }]
 
   
