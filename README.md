@@ -8,18 +8,29 @@ This repo contains the end-toend pipeline. It is composed of the golang web appl
 
 Create a Golang container as small and as secure as possible.
 
-Automate the build and upload of the container.
+Automate the build and upload of the container. Deploy it using Helm charts.
 
+2. TLS Offloading and Load Balancer.
 
-2. Automation
+LoadBalancer type service creates a L4 load balancer. L4 load balancers are aware about source IP:port and destination IP:port, but they are not aware about anything on the application layer.
+
+HTTP/HTTPS load balancers are on L7, therefor they are application aware.
+
+So, basically you it is not possible to get  a HTTPS load balancer from a LoadBalancer type service. The achieve it, a Ingress controller is needed.
+
+Nginx was the choice for this project. Since it is one of the most used by the community, and has a great support.
+
+To manage certificates, Cert-Manager was the choice for this project. It is the most popular solution used in Kubernetes and has a great support from the community.
+
+3. Automation
 
 The whole process is fully automated. There are four pipelines. 
 One is responsible for creating the whole infra on AWS, after this pipeline finishes it is gonna trigger a second pipeline which is responsible for configuring the following add-ons:
 
-Metrics Server
-Nginx Ingress Controller
-Cert-Manager
-Cert-Manager Issuers(Prod only)
+- Metrics Server
+- Nginx Ingress Controller
+- Cert-Manager
+- Cert-Manager Issuers(Prod only)
 
 Next ones are responsible for creating the container and pushing it to DockerHub, after this pipeline finishes it is gonna trigger another pipeline which is responsible for deploying the Helm chart into the EKS cluster.
 
