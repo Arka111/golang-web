@@ -14,9 +14,9 @@ Automate the build and upload of the container. Deploy it using Helm charts.
 
 LoadBalancer type service creates a L4 load balancer. L4 load balancers are aware about source IP:port and destination IP:port, but they are not aware about anything on the application layer.
 
-HTTP/HTTPS load balancers are on L7, therefor they are application aware.
+HTTP/HTTPS load balancers are on L7, therefore they are application aware.
 
-So, basically you it is not possible to get  a HTTPS load balancer from a LoadBalancer type service. The achieve it, a Ingress controller is needed.
+So, basically it is not possible to get  a HTTPS load balancer from a LoadBalancer type service. The achieve it, a Ingress controller is needed.
 
 Nginx was the choice for this project. Since it is one of the most used by the community, and has a great support.
 
