@@ -16,7 +16,7 @@ LoadBalancer type service creates a L4 load balancer. L4 load balancers are awar
 
 HTTP/HTTPS load balancers are on L7, therefore they are application aware.
 
-So, basically it is not possible to get  a HTTPS load balancer from a LoadBalancer type service. The achieve it, a Ingress controller is needed.
+So, basically it is not possible to get  a HTTPS load balancer from a LoadBalancer type service. To achieve it, an Ingress controller is needed.
 
 Nginx was the choice for this project. Since it is one of the most used by the community, and has a great support. It also serves as a reverse proxy.
 
